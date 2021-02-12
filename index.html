@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script>
+      function getCookie(name) {
+        var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+        return v ? v[2] : null;
+      }
+
+      function initLoggedInState() {
+        document.getElementById("message").innerHTML = "User logged in";
+        document.getElementById("login").style.display = "none";
+        document.getElementById("logout").style.display = "block";
+        doAuthenticatedThing();
+      }
+
+      function initLoggedOutState() {
+        document.getElementById("message").innerHTML = "No user logged in";
+        document.getElementById("login").style.display = "block";
+        document.getElementById("logout").style.display = "none";
+      }
+
+      function init() {
+        getCookie('token') ? initLoggedInState() : initLoggedOutState();
+      }
+
+      function loginUser() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            initLoggedInState();
+          }
+        };
+
+        xhr.open("POST", "login", true);
+        xhr.send();
+      }
+
+      function doAuthenticatedThing() {
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        xhr.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("do-thing-result").innerHTML = "Slow authenticated thing done";
+          }
+        };
+
+        xhr.open("POST", "do-thing", true);
+        xhr.send();
+      }
+
+      function logoutUser() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            initLoggedOutState();
+          }
+        };
+
+        xhr.open("POST", "logout", true);
+        xhr.send();
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <div id="message"></div>
+    <button id="login" onclick="loginUser()" style="display:none;">Log In</button>
+    <button id="logout" onclick="logoutUser()" style="display:none;">Log Out</button>
+    <br/>
+    <div id="do-thing-result"></div>
+  </body>
+</html>
